@@ -1,0 +1,49 @@
+version : '3' 
+services :
+#A utiliser : 
+Postgres
+Nginx
+Elastic Search
+Kibana
+
+####SERVICE1
+  ghost: 
+  #possibilité d'utiliser build et un chemin vers un dockerfile
+    image: ghost:1-alpine
+    container_name: ghost-blog
+    #redémarre automatiquement en cas d'erreur  
+    restart: always
+    #host -> 80 : container -> 2368
+    ports: 
+     - "80:2368"
+    environment:
+    #configuration du lien avec la base de donnee qui recoltera les données ghost
+      database__client: mysql
+      database__connection__host: "3306"
+      database__connection__user: myuser
+      database__connection__password: "1234"
+      database__connection__database: ghost 
+    #ecriture des données du conteneur en local 
+    volumes: 
+      - ghost-volume:/var/lib/ghost 
+    #argument permettant d'effectuer la creation de sql avant ghost 
+    depends_on : 
+      - mysql
+####SERVICE2
+  mysql:
+    image: mysql:latest
+    container_name: ghost-db 
+    restart: always
+    #commande permettant de securise le mdp
+    command: --default-authentication-plugin=mysql_native_password
+    environment: 
+      MYSQL_ROOT_PASSWORD : "1234"
+      MYSQL_DATABASE: mysql
+      MYSQL_USER: myuser
+      MYSQL_PASSWORD: "1234"
+    volumes : 
+      - mysql-volume:/var/lib/mysql
+
+volumes : 
+  ghost-volume : 
+  mysql-volume : 
