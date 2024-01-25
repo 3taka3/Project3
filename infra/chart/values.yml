@@ -1,0 +1,11 @@
+# mychart/values.yaml
+replicaCount: 1
+image:
+  repository: nginx
+  tag: stable
+  pullPolicy: IfNotPresent
+
+service:
+  name: myapp
+  type: ClusterIP
+  port: 80
