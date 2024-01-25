@@ -16,3 +16,6 @@ EXPOSE 80
 
 # Commande par défaut pour lancer Apache
 CMD ["apache2ctl", "-D", "FOREGROUND"]
+
+
+FAjouter build et test 
