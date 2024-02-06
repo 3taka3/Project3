@@ -1,0 +1,76 @@
+version: "3.9"
+
+# Spark
+services:
+  sparkmaster:
+    image: bde2020/spark-master:latest
+    container_name: sparkmaster
+    ports:
+      - 8090:8080
+      - 7077:7077
+    volumes:
+      - sharedworkspace:/opt/workspace
+    depends_on:
+      - mongodb
+    networks:
+      - localnet
+
+  sparkworker1:
+    image: bde2020/spark-worker:latest
+    container_name: sparkworker1
+    environment:
+      - SPARK_WORKER_CORES=2
+      - SPARK_WORKER_MEMORY=4g
+      - SPARK_MASTER=spark://sparkmaster:7077
+    ports:
+      - 8081:8092
+    volumes:
+      - sharedworkspace:/opt/workspace
+    depends_on:
+      - sparkmaster
+    networks:
+      - localnet
+
+  sparkworker2:
+    image: bde2020/spark-worker:latest
+    container_name: sparkworker2
+    environment:
+      - SPARK_WORKER_CORES=4
+      - SPARK_WORKER_MEMORY=4g
+      - SPARK_MASTER=spark://sparkmaster:7077
+    ports:
+      - 8082:8081
+    volumes:
+      - sharedworkspace:/opt/workspace
+    depends_on:
+      - sparkmaster
+    networks:
+      - localnet
+
+# MongoDB 
+  mongodb:
+    image: "mongo:6.0"
+    container_name: mongodb
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: admin
+      MONGO_INITDB_DATABASE: mongodb
+      command: sh "npm install -g mongosh" && "mongosh "mongodb://127.0.0.1:27017/mongodb" --username admin --password admin"
+    volumes:
+      - ./init.js:/docker-entrypoint-initdb.d/init.js:ro
+      - mongodb:/data/db
+      - /data/db/logs
+    entrypoint: ["/docker-entrypoint-initdb.d/init.js"]  
+    networks:
+      - localnet
+    ports:
+      - "27017:27017"
+    restart: always
+
+volumes:
+    sharedworkspace:
+    mongodb:
+
+networks:
+  localnet:
+    attachable: true
