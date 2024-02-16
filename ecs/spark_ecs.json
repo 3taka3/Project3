@@ -1,0 +1,104 @@
+{
+  "family": "my-spark-task",
+  "networkMode": "awsvpc",
+  "containerDefinitions": [
+    {
+      "name": "sparkmaster",
+      "image": "bde2020/spark-master:latest",
+      "cpu": 1024,
+      "memoryReservation": 2048,
+      "portMappings": [
+        {
+          "containerPort": 8080,
+          "hostPort": 8090
+        },
+        {
+          "containerPort": 7077,
+          "hostPort": 7077
+        }
+      ],
+      "essential": true,
+      "mountPoints": [
+        {
+          "sourceVolume": "sharedworkspace",
+          "containerPath": "/opt/workspace",
+          "readOnly": false
+        }
+      ]
+    },
+    {
+      "name": "sparkworker1",
+      "image": "bde2020/spark-worker:latest",
+      "cpu": 1024,
+      "memoryReservation": 4096,
+      "environment": [
+        {
+          "name": "SPARK_WORKER_CORES",
+          "value": "2"
+        },
+        {
+          "name": "SPARK_WORKER_MEMORY",
+          "value": "4g"
+        },
+        {
+          "name": "SPARK_MASTER",
+          "value": "spark://sparkmaster:7077"
+        }
+      ],
+      "portMappings": [
+        {
+          "containerPort": 8092,
+          "hostPort": 8081
+        }
+      ],
+      "essential": true,
+      "mountPoints": [
+        {
+          "sourceVolume": "sharedworkspace",
+          "containerPath": "/opt/workspace",
+          "readOnly": false
+        }
+      ]
+    },
+    {
+      "name": "sparkworker2",
+      "image": "bde2020/spark-worker:latest",
+      "cpu": 1024,
+      "memoryReservation": 4096,
+      "environment": [
+        {
+          "name": "SPARK_WORKER_CORES",
+          "value": "4"
+        },
+        {
+          "name": "SPARK_WORKER_MEMORY",
+          "value": "4g"
+        },
+        {
+          "name": "SPARK_MASTER",
+          "value": "spark://sparkmaster:7077"
+        }
+      ],
+      "portMappings": [
+        {
+          "containerPort": 8081,
+          "hostPort": 8082
+        }
+      ],
+      "essential": true,
+      "mountPoints": [
+        {
+          "sourceVolume": "sharedworkspace",
+          "containerPath": "/opt/workspace",
+          "readOnly": false
+        }
+      ]
+    }
+  ],
+  "volumes": [
+    {
+      "name": "sharedworkspace",
+      "host": {}
+    }
+  ]
+}

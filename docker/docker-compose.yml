@@ -49,24 +49,21 @@ services:
 
 # MongoDB 
   mongodb:
-    image: "mongo:6.0"
+    image: "mongo:latest"
     container_name: mongodb
     environment:
       MONGO_INITDB_ROOT_USERNAME: admin
       MONGO_INITDB_ROOT_PASSWORD: admin
       MONGO_INITDB_DATABASE: mongodb
-      command: sh "npm install -g mongosh" && "mongosh "mongodb://127.0.0.1:27017/mongodb" --username admin --password admin"
+    ports:
+      - 27017:27017
     volumes:
-      - ./init.js:/docker-entrypoint-initdb.d/init.js:ro
       - mongodb:/data/db
       - /data/db/logs
-    entrypoint: ["/docker-entrypoint-initdb.d/init.js"]  
     networks:
       - localnet
-    ports:
-      - "27017:27017"
     restart: always
-
+    
 volumes:
     sharedworkspace:
     mongodb:
