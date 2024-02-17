@@ -35,12 +35,12 @@ variable "cidr_subnet_mongo2" {
 
 #SECURITY GROUPS -
 variable "cidr_sg_spark" {
-  default = ["10.0.1.0/24"]
+  default = ["0.0.0.0/0"]
   sensitive = true
 }
 
 variable "cidr_sg_mongo" {
-  default = ["10.0.2.0/24"]
+  default = ["0.0.0.0/0"]
   sensitive = true
 }
 
