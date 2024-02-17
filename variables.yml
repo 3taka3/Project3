@@ -1,7 +1,0 @@
-#variable.yml
-#ECR
-uri_repository: "737935841387.dkr.ecr.us-east-1.amazonaws.com/ecr"
-region : "us-east-1"
-image_name: "goldenspark"
-image_tag: "1:0"
-container_name: "goldenspark"

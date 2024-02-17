@@ -1,0 +1,53 @@
+default:
+  image: docker:24.0.5
+  services:
+    - docker:24.0.5-dind
+
+variables:
+  TAG_VERSION: "0.3"
+
+stages:
+  - build-python
+  - build-docker
+  - test
+  - push
+  - deploy
+
+build-python:
+  image : python:latest
+  stage: build-python
+  script:
+    - pip install -r src_ACTI2/requirements.txt
+    - python3 src_ACTI2/golden_spark_test.py
+
+build-docker:
+  stage: build-docker
+  before_script:
+    - echo "$DOCKER_REGISTRY_PASS" | docker login --username $DOCKER_REGISTRY_USER --password-stdin
+  script:
+    - docker build -t $DOCKER_REGISTRY:${TAG_VERSION} ../GoldenLine/src_ACTI2/ --no-cache
+    - docker push $DOCKER_REGISTRY:${TAG_VERSION}
+
+test-run:
+  stage: test
+  script:
+    - docker pull $DOCKER_REGISTRY:${TAG_VERSION}
+    - docker run --name GoldenLine -p 80:80 -d $DOCKER_REGISTRY:${TAG_VERSION}
+    - docker stop GoldenLine
+
+release-image:
+  stage: push
+  script: 
+    - docker pull
+    - docker tag $DOCKER_REGISTRY:${TAG_VERSION} ${REPOSITORY_URL}
+    - docker login -u AWS -p $(aws ecr get-login-password --region us-east-1) ${REPOSITORY_URL}
+    - docker push ${REPOSITORY_URL}
+
+deploy:
+  stage: deploy
+  script:
+          - pip install awscli
+          - $(aws ecr get-login-password --no-include-email --region us-east-1)
+          - aws ecs update-service --cluster Ous-Cluster --service Ous-Service --force-new-deployment --task-definition YOUSSOUFOU --region us-east-1
+    
+
