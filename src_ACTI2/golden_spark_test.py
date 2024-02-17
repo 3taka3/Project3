@@ -1,18 +1,23 @@
 import unittest
 from pyspark.sql import SparkSession
 
-__all__ = ["SparkSession"]
-
 class TestSparkApp(unittest.TestCase):
+
     @classmethod
     def setUpClass(cls):
-        # Initialiser la session Spark pour tous les tests
+        # Créer une session Spark pour tous les tests
         cls.spark = SparkSession.builder \
-            .appName("UnitTest") \
+            .appName("Test GoldenLine") \
+            .master("local[2]") \
             .getOrCreate()
 
+    @classmethod
+    def tearDownClass(cls):
+        # Arrêter la session Spark après tous les tests
+        cls.spark.stop()
+
     def test_dataframe_creation(self):
-        # Test la création d'une DataFrame
+        # Créer une DataFrame et vérifier le contenu
         data = [("Hello, World!",)]
         df = self.spark.createDataFrame(data, ["Golden Line Spark"])
         self.assertEqual(df.count(), 1)
@@ -24,7 +29,3 @@ class TestSparkApp(unittest.TestCase):
         rdd = self.spark.sparkContext.parallelize(data)
         self.assertEqual(rdd.sum(), sum(data))
         self.assertEqual(rdd.count(), len(data))
-    
-    def tearDownClass(cls):
-        # Arrêter la session Spark après tous les tests
-        cls.spark.stop()

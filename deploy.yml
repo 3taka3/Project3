@@ -1,0 +1,35 @@
+version: 0.2
+
+env:
+  variables:
+    ECR_REPOSITORY_URI: "767397875675.dkr.ecr.eu-central-1.amazonaws.com/deploy-pyspark"
+    AWS_DEFAULT_REGION: "eu-central-1"
+    IMAGE_REPO_NAME: "goldenspark"
+    IMAGE_TAG: "2:0"
+    CONTAINER_NAME: "web"
+
+phases:
+  install:
+    commands:
+      - echo Installing dependencies and running tests...
+      - pip install -r requirements.txt  # Assuming your tests run in the build environment directly
+      - python -m pytest tests/
+  pre_build:
+    commands:
+      - echo Logging in to Amazon ECR...
+      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $ECR_REPOSITORY_URI
+  build:
+    commands:
+      - echo Building the Docker image...
+      - docker build -t $IMAGE_REPO_NAME:$IMAGE_TAG .
+      - docker tag $IMAGE_REPO_NAME:$IMAGE_TAG $ECR_REPOSITORY_URI:$IMAGE_TAG
+  post_build:
+    commands:
+      - echo Pushing the Docker image...
+      - docker push $ECR_REPOSITORY_URI:$IMAGE_TAG
+      - echo Writing image definitions file...
+      - printf '[{"name":"%s","imageUri":"%s"}]' $CONTAINER_NAME $ECR_REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
+
+artifacts:
+  files:
+    - imagedefinitions.json
