@@ -7,8 +7,7 @@ class TestSparkApp(unittest.TestCase):
     def setUpClass(cls):
         # Créer une session Spark pour tous les tests
         cls.spark = SparkSession.builder \
-            .appName("Test GoldenLine") \
-            .master("local[2]") \
+            .appName("Test Spark App") \
             .getOrCreate()
 
     @classmethod
@@ -29,3 +28,4 @@ class TestSparkApp(unittest.TestCase):
         rdd = self.spark.sparkContext.parallelize(data)
         self.assertEqual(rdd.sum(), sum(data))
         self.assertEqual(rdd.count(), len(data))
+

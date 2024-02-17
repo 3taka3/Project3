@@ -13,6 +13,6 @@ COPY . /app
 RUN pip3 install --no-cache-dir -r requirements.txt 
 
 # Exécuter les tests unitaires
-CMD ["python", "-m", "unittest.py", "golden_spark_v1.py"]
+CMD ["python", "-m", "golden_spark_test.py", "golden_spark_v1.py"]
 
 USER 185

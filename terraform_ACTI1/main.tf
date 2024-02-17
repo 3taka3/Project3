@@ -61,7 +61,7 @@ resource "aws_subnet" "my_subnet_mongo1" {
 resource "aws_subnet" "my_subnet_mongo2" {
   vpc_id     = aws_vpc.my_vpc.id
   cidr_block = var.cidr_subnet_mongo2
-  availability_zone = var.availability_zone
+  availability_zone = var.availability_zone2
   tags = {
     Name = "MySubnet_Mongo2"
   }
@@ -81,7 +81,6 @@ resource "aws_route_table_association" "my_route_my_subnet_mongo2" {
   subnet_id      = aws_subnet.my_subnet_mongo2.id
   route_table_id = aws_route_table.my_route.id
 }
-
 
 # 5. Security groups
 resource "aws_security_group" "sparkm_security_group" {
@@ -185,7 +184,6 @@ resource "aws_emr_cluster" "spark_cluster" {
       volumes_per_instance = var.volume_per_instances
     }
   }
-depends_on = [aws_security_group.sparkc_security_group]
 }
 
 

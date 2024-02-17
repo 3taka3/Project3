@@ -5,7 +5,7 @@ __all__ = ["SparkSession"]
 
 # Création d'une instance de SparkSession
 spark = SparkSession.builder \
-    .appName("HelloWorld") \
+    .appName("GoldenLine") \
     .getOrCreate()
 
 # Création d'une DataFrame avec une seule colonne et une seule ligne contenant le texte "Hello, World!"

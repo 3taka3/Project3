@@ -1,0 +1,37 @@
+variables:
+    DOCKER_IMAGE_VERSION: $CI_COMMIT_SHORT_SHA
+
+stages:          # List of stages for jobs, and their order of execution
+  - build
+  - test
+  - deploy
+
+build_docker_image:
+  stage: build
+  script:
+    - docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD"
+    - docker build -t GoldenLine:${DOCKER_IMAGE_VERSION}
+    - docker push GoldenLine:${DOCKER_IMAGE_VERSION}
+  tags:
+    - docker
+
+
+unit-test-job:   # This job runs in the test stage.
+  stage: test    # It only starts when the job in the build stage completes successfully.
+  script:
+    - echo "Running unit tests..."
+    - run "golden_spark_test.py"
+
+lint-test-job:   # This job also runs in the test stage.
+  stage: test    # It can run at the same time as unit-test-job (in parallel).
+  script:
+    - echo "Linting code... This will take about 10 seconds."
+    - sleep 10
+    - echo "No lint issues found."
+
+deploy-job:      # This job runs in the deploy stage.
+  stage: deploy  # It only runs when *both* jobs in the test stage complete successfully.
+  environment: production
+  script:
+    - echo "Deploying application..."
+    - run "deploy.yml"

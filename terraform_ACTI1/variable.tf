@@ -5,7 +5,7 @@ variable "region" {
 
 #VPC
 variable "cidr_vpc" {
-  default = "10.0.0.0/16"
+  default = "10.0.0.0/24"
 }
 variable "cidr_route" {
   default = "0.0.0.0/0"
@@ -17,18 +17,22 @@ variable "availability_zone" {
   default = "us-east-1a"
 }
 
+variable "availability_zone2" {
+  default = "us-east-1b"
+}
+
 variable "cidr_subnet_spark" {
-  default = "10.0.1.0/24"
+  default = "10.0.0.0/26"
   sensitive = true
 }
 
 variable "cidr_subnet_mongo1" {
-  default = "10.0.2.0/24"
+  default = "10.0.0.64/26"
   sensitive = true
 }
 
 variable "cidr_subnet_mongo2" {
-  default = "10.0.3.0/24"
+  default = "10.0.0.128/26"
   sensitive = true
 }
 
@@ -126,7 +130,7 @@ variable "volume_per_instances" {
 
 #MONGO - Cluster
 variable "mongo_instance_count" {
-  default = 1
+  default = 2
 }
 variable "instance_class" {
   default = "db.r5.large"
@@ -134,7 +138,7 @@ variable "instance_class" {
 
 #login
 variable "master_username" {
-  default = "admin"
+  default = "adminuser"
   sensitive = true
 }
 variable "master_password" {
